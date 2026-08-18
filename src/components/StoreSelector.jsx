@@ -5,19 +5,24 @@ import "./StoreSelector.css";
 function StoreAwards({ awards }) {
   if (!awards?.isEligible) return null;
 
-  const labels = [
-    awards.threeStar && "엽슐랭 3스타",
-    awards.cheese && "치즈상",
-    awards.sauce && "소스상",
-    awards.cooking && "익힘상",
+  const badges = [
+    awards.threeStar && { label: "엽슐랭 3스타", isThreeStar: true },
+    awards.cheese && { label: "치즈상" },
+    awards.sauce && { label: "소스상" },
+    awards.cooking && { label: "익힘상" },
   ].filter(Boolean);
 
-  if (labels.length === 0) return null;
+  if (badges.length === 0) return null;
 
   return (
     <div className="store-selector-awards" aria-label="지점 수상 정보">
-      {labels.map((label) => (
-        <span key={label}>{label}</span>
+      {badges.map((badge) => (
+        <span
+          key={badge.label}
+          className={badge.isThreeStar ? "is-three-star" : ""}
+        >
+          {badge.label}
+        </span>
       ))}
     </div>
   );

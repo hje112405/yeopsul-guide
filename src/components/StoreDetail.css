@@ -176,18 +176,18 @@
 
 .store-award-badges span {
   padding: 7px 10px;
-  border: 1px solid #fde68a;
+  border: 1px solid var(--service-red);
   border-radius: 999px;
-  color: #92400e;
-  background: #fffbeb;
+  color: var(--service-red);
+  background: var(--service-red-soft);
   font-size: 12px;
   font-weight: 800;
 }
 
 .store-award-badges span.is-three-star {
-  border-color: #dc2626;
+  border-color: var(--service-red);
   color: #fff;
-  background: #dc2626;
+  background: var(--service-red);
 }
 
 .detail-empty-state {

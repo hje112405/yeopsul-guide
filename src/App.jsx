@@ -22,9 +22,10 @@ import {
 
 const CAPITAL_REGIONS = ["서울특별시", "경기도", "인천광역시"];
 const SEOUL_CENTER = { lat: 37.5665, lng: 126.978 };
-const CARD_MARKER_MIN_ZOOM = 13;
-const MAX_CARD_MARKERS = 5;
-const DEFAULT_USER_ZOOM = 13;
+const CARD_MIN_ZOOM = 13;
+const CARD_COLLISION_WIDTH = 184;
+const CARD_COLLISION_HEIGHT = 96;
+const CARD_COLLISION_GAP = 12;
 const DEFAULT_FALLBACK_ZOOM = 9;
 const EMPTY_AWARD_RESULT = calculateStoreAwards([]);
 const INDIVIDUAL_AWARD_FILTER_KEYS = ["cheese", "sauce", "cooking"];
@@ -55,14 +56,44 @@ function getStoreKey(store) {
   return String(store.id ?? `${store.name}|${store.address}`);
 }
 
-function CurrentLocationControl({ userPosition, isSheetOpen }) {
+function getDefaultUserZoom() {
+  return typeof window !== "undefined" && window.innerWidth < 640 ? 14 : 13;
+}
+
+function isStoreInsideBounds(store, bounds) {
+  if (!bounds) return false;
+  const isInsideLatitude =
+    store.lat >= bounds.south && store.lat <= bounds.north;
+  const isInsideLongitude =
+    bounds.west <= bounds.east
+      ? store.lng >= bounds.west && store.lng <= bounds.east
+      : store.lng >= bounds.west || store.lng <= bounds.east;
+  return isInsideLatitude && isInsideLongitude;
+}
+
+function doRectsOverlap(firstRect, secondRect) {
+  const gap = CARD_COLLISION_GAP;
+  return !(
+    firstRect.right + gap <= secondRect.left ||
+    firstRect.left >= secondRect.right + gap ||
+    firstRect.bottom + gap <= secondRect.top ||
+    firstRect.top >= secondRect.bottom + gap
+  );
+}
+
+function CurrentLocationControl({
+  userPosition,
+  isSheetOpen,
+  onReturnToUser,
+}) {
   const map = useMap();
 
   function moveToCurrentLocation() {
     if (!map || !userPosition) return;
 
+    onReturnToUser();
     map.panTo(userPosition);
-    map.setZoom(DEFAULT_USER_ZOOM);
+    map.setZoom(getDefaultUserZoom());
   }
 
   return (
@@ -100,7 +131,7 @@ function MapViewportController({ focusRequest }) {
     if (!map || !focusRequest) return;
 
     map.panTo({ lat: focusRequest.lat, lng: focusRequest.lng });
-    map.setZoom(DEFAULT_USER_ZOOM);
+    map.setZoom(getDefaultUserZoom());
   }, [focusRequest, map]);
 
   return null;
@@ -126,15 +157,21 @@ function AwardMarkerCard({ store, onSelect }) {
     >
       <div className="award-marker-surface">
         <div className="award-marker-awards" aria-label={`${store.name} 수상 정보`}>
-          {awardItems.map((award) => (
-            <span
-              key={award.key}
-              className={store.awards[award.key] ? "is-awarded" : ""}
-            >
-              <b aria-hidden="true">{store.awards[award.key] ? "★" : "☆"}</b>
-              {award.label}
-            </span>
-          ))}
+          {awardItems.map((award) => {
+            const isAwarded = Boolean(
+              store.awards?.isEligible && store.awards?.[award.key],
+            );
+
+            return (
+              <span
+                key={award.key}
+                className={isAwarded ? "is-awarded" : ""}
+              >
+                <b aria-hidden="true">{isAwarded ? "★" : "☆"}</b>
+                {award.label}
+              </span>
+            );
+          })}
         </div>
         <div className="award-marker-card">
           <strong>{store.name}</strong>
@@ -169,7 +206,8 @@ function YeopsulMap({
   const [isLocationReady, setIsLocationReady] = useState(
     () => typeof navigator === "undefined" || !navigator.geolocation,
   );
-  const [currentZoom, setCurrentZoom] = useState(DEFAULT_FALLBACK_ZOOM);
+  const [mapViewport, setMapViewport] = useState(null);
+  const [cardPriorityMode, setCardPriorityMode] = useState("user");
   const [isMyPageOpen, setIsMyPageOpen] = useState(false);
   const [storeAwardsById, setStoreAwardsById] = useState({});
   const [activeAwardFilters, setActiveAwardFilters] = useState([]);
@@ -319,7 +357,6 @@ function YeopsulMap({
           lat: position.coords.latitude,
           lng: position.coords.longitude,
         });
-        setCurrentZoom(DEFAULT_USER_ZOOM);
         setIsLocationReady(true);
       },
       (error) => {
@@ -385,43 +422,119 @@ function YeopsulMap({
   }, [userPosition, visibleStores]);
   const searchResults = normalizedSearchTerm ? storesByDistance : [];
   const selectedStoreWithAwards = selectedStore
-    ? storesWithAwards.find((store) => store.id === selectedStore.id) ??
+    ? storesWithAwards.find(
+        (store) => getStoreKey(store) === getStoreKey(selectedStore),
+      ) ??
       selectedStore
     : null;
   const cardMarkerStoreKeys = useMemo(() => {
-    if (currentZoom < CARD_MARKER_MIN_ZOOM) return new Set();
-
-    const nearestStores = storesByDistance.slice(0, MAX_CARD_MARKERS);
-    if (!selectedStore) {
-      return new Set(nearestStores.map(getStoreKey));
+    if (
+      !mapViewport ||
+      mapViewport.zoom < CARD_MIN_ZOOM ||
+      !mapViewport.projection
+    ) {
+      return new Set();
     }
 
-    const selectedKey = getStoreKey(selectedStore);
-    const selectedIsVisible = storesByDistance.some(
-      (store) => getStoreKey(store) === selectedKey,
+    const storesInViewport = visibleStores.filter((store) =>
+      isStoreInsideBounds(store, mapViewport.bounds),
     );
-    if (!selectedIsVisible) {
-      return new Set(nearestStores.map(getStoreKey));
-    }
+    const priorityPosition =
+      cardPriorityMode === "user" && userPosition
+        ? userPosition
+        : mapViewport.center;
+    const orderedStores = [...storesInViewport].sort(
+      (firstStore, secondStore) =>
+        calculateDistanceKm(priorityPosition, firstStore) -
+        calculateDistanceKm(priorityPosition, secondStore),
+    );
+    const selectedKey = selectedStore ? getStoreKey(selectedStore) : null;
+    const selectedIsVisible = selectedKey
+      ? orderedStores.some((store) => getStoreKey(store) === selectedKey)
+      : false;
+    const candidates = selectedIsVisible
+      ? [
+          selectedStore,
+          ...orderedStores.filter(
+            (store) => getStoreKey(store) !== selectedKey,
+          ),
+        ]
+      : orderedStores;
+    const centerPoint = mapViewport.projection.fromLatLngToPoint(
+      mapViewport.center,
+    );
+    if (!centerPoint) return new Set();
 
-    return new Set(
-      [
-        selectedStore,
-        ...storesByDistance.filter(
-          (store) => getStoreKey(store) !== selectedKey,
-        ),
-      ]
-        .slice(0, MAX_CARD_MARKERS)
-        .map(getStoreKey),
-    );
-  }, [currentZoom, selectedStore, storesByDistance]);
+    const scale = 2 ** mapViewport.zoom;
+    const acceptedRects = [];
+    const acceptedStoreKeys = new Set();
+
+    candidates.forEach((store) => {
+      const worldPoint = mapViewport.projection.fromLatLngToPoint({
+        lat: store.lat,
+        lng: store.lng,
+      });
+      if (!worldPoint) return;
+
+      const anchorX =
+        (worldPoint.x - centerPoint.x) * scale + mapViewport.width / 2;
+      const anchorY =
+        (worldPoint.y - centerPoint.y) * scale + mapViewport.height / 2;
+      const candidateRect = {
+        left: anchorX - CARD_COLLISION_WIDTH / 2,
+        right: anchorX + CARD_COLLISION_WIDTH / 2,
+        top: anchorY - CARD_COLLISION_HEIGHT,
+        bottom: anchorY,
+      };
+
+      if (
+        acceptedRects.some((acceptedRect) =>
+          doRectsOverlap(candidateRect, acceptedRect),
+        )
+      ) {
+        return;
+      }
+
+      acceptedRects.push(candidateRect);
+      acceptedStoreKeys.add(getStoreKey(store));
+    });
+
+    return acceptedStoreKeys;
+  }, [
+    cardPriorityMode,
+    mapViewport,
+    selectedStore,
+    userPosition,
+    visibleStores,
+  ]);
   const selectedStoreDistance =
     selectedStoreWithAwards && userPosition
       ? calculateDistanceKm(userPosition, selectedStoreWithAwards)
       : null;
   const isBottomSheetOpen = Boolean(selectedStore);
 
+  function captureMapViewport(event) {
+    const map = event.map;
+    const bounds = map.getBounds()?.toJSON();
+    const center = map.getCenter()?.toJSON();
+    const projection = map.getProjection();
+    const mapElement = map.getDiv();
+    const zoom = map.getZoom();
+
+    if (!bounds || !center || !projection || !Number.isFinite(zoom)) return;
+
+    setMapViewport({
+      bounds,
+      center,
+      projection,
+      zoom,
+      width: mapElement.clientWidth,
+      height: mapElement.clientHeight,
+    });
+  }
+
   function selectSearchResult(store) {
+    setCardPriorityMode("map");
     setSelectedStore(store);
     setFocusRequest({ ...store });
     setSearchTerm("");
@@ -435,8 +548,7 @@ function YeopsulMap({
   function toggleMarkerSelection(store) {
     setSelectedStore((currentStore) => {
       const isSameStore =
-        currentStore?.name === store.name &&
-        currentStore?.address === store.address;
+        currentStore && getStoreKey(currentStore) === getStoreKey(store);
 
       return isSameStore ? null : store;
     });
@@ -595,7 +707,7 @@ function YeopsulMap({
                 searchResults.map((store) => (
                   <button
                     type="button"
-                    key={`${store.name}-${store.address}`}
+                    key={getStoreKey(store)}
                     className="search-result-item"
                     onClick={() => selectSearchResult(store)}
                     role="option"
@@ -661,16 +773,18 @@ function YeopsulMap({
               <Map
                 defaultCenter={initialCenter}
                 defaultZoom={
-                  userPosition ? DEFAULT_USER_ZOOM : DEFAULT_FALLBACK_ZOOM
+                  userPosition ? getDefaultUserZoom() : DEFAULT_FALLBACK_ZOOM
                 }
                 mapId="DEMO_MAP_ID"
-                onZoomChanged={(event) => setCurrentZoom(event.detail.zoom)}
+                mapTypeControl={false}
+                onDragstart={() => setCardPriorityMode("map")}
+                onIdle={captureMapViewport}
                 style={{ width: "100%", height: "100%" }}
               >
             {visibleStores.map((store) =>
               cardMarkerStoreKeys.has(getStoreKey(store)) ? (
                 <AdvancedMarker
-                  key={`${store.name}-${store.address}`}
+                  key={getStoreKey(store)}
                   position={{ lat: store.lat, lng: store.lng }}
                   title={store.name}
                   clickable
@@ -682,7 +796,7 @@ function YeopsulMap({
                 </AdvancedMarker>
               ) : (
                 <Marker
-                  key={`${store.name}-${store.address}`}
+                  key={getStoreKey(store)}
                   position={{ lat: store.lat, lng: store.lng }}
                   title={store.name}
                   onClick={() => toggleMarkerSelection(store)}
@@ -702,6 +816,7 @@ function YeopsulMap({
             <CurrentLocationControl
               userPosition={userPosition}
               isSheetOpen={isBottomSheetOpen}
+              onReturnToUser={() => setCardPriorityMode("user")}
             />
             <MapViewportController focusRequest={focusRequest} />
               </Map>
@@ -717,7 +832,7 @@ function YeopsulMap({
             {storesByDistance.map((store) => (
               <button
                 type="button"
-                key={`${store.name}-${store.address}`}
+                key={getStoreKey(store)}
                 className="store-list-card"
                 onClick={() => selectListStore(store)}
               >

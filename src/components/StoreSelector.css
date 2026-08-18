@@ -146,11 +146,17 @@
 
 .store-selector-awards span {
   padding: 4px 8px;
+  border: 1px solid var(--service-red);
   border-radius: 999px;
-  color: #b91c1c;
-  background: #fef2f2;
+  color: var(--service-red);
+  background: var(--service-red-soft);
   font-size: 11px;
   font-weight: 800;
+}
+
+.store-selector-awards span.is-three-star {
+  color: #fff;
+  background: var(--service-red);
 }
 
 .store-selector-empty {
