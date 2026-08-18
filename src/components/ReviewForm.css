@@ -148,18 +148,21 @@
   width: 44px;
   height: 44px;
   padding: 0;
-  border: 1px solid #e5e7eb;
-  border-radius: 9px;
-  color: #d1d5db;
-  background: #fff;
+  border: 0;
+  color: #9ca3af;
+  background: transparent;
   cursor: pointer;
-  font-size: 23px;
+}
+
+.rating-options button svg {
+  display: block;
+  width: 26px;
+  height: 26px;
+  margin: auto;
 }
 
 .rating-options button.is-selected {
-  border-color: #f59e0b;
-  color: #f59e0b;
-  background: #fffbeb;
+  color: var(--service-red);
 }
 
 .review-content-field > div {

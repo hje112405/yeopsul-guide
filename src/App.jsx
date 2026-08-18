@@ -7,6 +7,7 @@ import MyPageModal from "./components/MyPageModal";
 import ManiaTest from "./components/ManiaTest";
 import SignupModal from "./components/SignupModal";
 import LoginModal from "./components/LoginModal";
+import { StarIcon } from "./components/Icons";
 import { calculateStoreAwards } from "./lib/awards";
 import { calculateDistanceKm, formatDistance } from "./lib/location";
 import "./Explorer.css";
@@ -167,7 +168,7 @@ function AwardMarkerCard({ store, onSelect }) {
                 key={award.key}
                 className={isAwarded ? "is-awarded" : ""}
               >
-                <b aria-hidden="true">{isAwarded ? "★" : "☆"}</b>
+                <StarIcon filled={isAwarded} />
                 {award.label}
               </span>
             );

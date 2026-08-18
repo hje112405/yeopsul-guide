@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { deleteOwnReview } from "../lib/reviews";
 import { supabase } from "../lib/supabase";
+import { BookmarkIcon } from "./Icons";
 import "./MyPageModal.css";
 
 function formatDate(value) {
@@ -609,7 +610,7 @@ function MyPageModal({
                       <span>{savedStore.stores?.address ?? "주소 정보 없음"}</span>
                     </button>
                     <button type="button" className="mypage-unsave" onClick={() => removeSavedStore(savedStore)} aria-label={`${savedStore.stores?.name ?? "지점"} 저장 해제`}>
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4V3Z" /></svg>
+                      <BookmarkIcon filled />
                     </button>
                   </article>
                 ))}

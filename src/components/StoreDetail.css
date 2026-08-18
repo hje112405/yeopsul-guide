@@ -69,31 +69,20 @@
   flex: 0 0 auto;
   padding: 0;
   place-items: center;
-  border: 1px solid #d1d5db;
-  border-radius: 12px;
+  border: 0;
   color: #4b5563;
-  background: #fff;
+  background: transparent;
   cursor: pointer;
 }
 
 .bookmark-button svg {
+  display: block;
   width: 23px;
   height: 23px;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.8;
 }
 
 .bookmark-button.is-saved {
-  border-color: #dc2626;
-  color: #dc2626;
-  background: #fef2f2;
-}
-
-.bookmark-button.is-saved svg {
-  fill: currentColor;
+  color: var(--service-red);
 }
 
 .bookmark-button:disabled {
@@ -429,24 +418,25 @@
   align-items: center;
   gap: 5px;
   margin-top: 14px;
-  padding: 5px 8px;
-  border: 1px solid #e5e7eb;
-  border-radius: 999px;
+  min-width: 44px;
+  min-height: 36px;
+  padding: 6px 8px;
+  border: 0;
   color: #6b7280;
-  background: #fff;
+  background: transparent;
   cursor: pointer;
   font-size: 13px;
 }
 
-.review-like-button span {
-  font-size: 17px;
-  line-height: 1;
+.review-like-button svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
 }
 
 .review-like-button.is-liked {
-  border-color: #fecaca;
-  color: #dc2626;
-  background: #fef2f2;
+  color: var(--service-red);
 }
 
 .review-like-button:disabled {

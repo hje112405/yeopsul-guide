@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
+import { StarIcon } from "./Icons";
 import {
   ALLOWED_REVIEW_IMAGE_TYPES,
   MAX_REVIEW_IMAGE_BYTES,
@@ -94,7 +95,7 @@ function RatingField({ label, value, onChange }) {
             aria-label={`${label} ${score}점`}
             aria-pressed={score === value}
           >
-            ★
+            <StarIcon filled={score <= value} />
           </button>
         ))}
       </div>

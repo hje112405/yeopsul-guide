@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { deleteOwnReview } from "../lib/reviews";
 import { calculateStoreAwards } from "../lib/awards";
+import { BookmarkIcon, HeartIcon } from "./Icons";
 import "./StoreDetail.css";
 
 function formatAverage(average) {
@@ -68,7 +69,7 @@ function ReviewCard({
         aria-label={isLiked ? "리뷰 좋아요 취소" : "리뷰 좋아요"}
         aria-pressed={isLiked}
       >
-        <span aria-hidden="true">{isLiked ? "♥" : "♡"}</span>
+        <HeartIcon filled={isLiked} />
         {likeCount}
       </button>
     </article>
@@ -415,9 +416,7 @@ function StoreDetail({
             aria-pressed={isSaved}
             aria-busy={isCheckingSaved || isChangingSaved}
           >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M6 3h12v18l-6-4-6 4V3Z" />
-            </svg>
+            <BookmarkIcon filled={isSaved} />
           </button>
         </header>
 

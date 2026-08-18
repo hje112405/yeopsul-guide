@@ -90,8 +90,8 @@
 .mypage-saved-card { display: flex; align-items: center; gap: 10px; }
 .mypage-saved-body { display: grid; flex: 1; gap: 5px; padding: 0; border: 0; color: #111827; background: transparent; cursor: pointer; text-align: left; }
 .mypage-saved-body span { color: #6b7280; font-size: 13px; line-height: 1.45; }
-.mypage-unsave { display: grid; width: 38px; height: 38px; flex: 0 0 auto; padding: 0; place-items: center; border: 1px solid #fecaca; border-radius: 10px; color: #dc2626; background: #fef2f2; cursor: pointer; }
-.mypage-unsave svg { width: 20px; fill: currentColor; stroke: currentColor; }
+.mypage-unsave { display: grid; width: 44px; height: 44px; flex: 0 0 auto; padding: 0; place-items: center; border: 0; color: var(--service-red); background: transparent; cursor: pointer; }
+.mypage-unsave svg { display: block; width: 22px; height: 22px; }
 .mypage-inline-confirm { margin-top: 14px; padding: 18px; border-radius: 11px; background: #f9fafb; text-align: center; }
 .mypage-inline-confirm > div { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
 .mypage-inline-confirm button { padding: 10px; border: 1px solid #d1d5db; border-radius: 9px; color: #374151; background: #fff; cursor: pointer; font-weight: 700; }
