@@ -377,6 +377,7 @@ function MyPageModal({
       console.warn("회원탈퇴 후 리뷰 사진 정리 경고:", data.storageWarning);
     }
 
+    onReviewsChanged?.();
     setIsWithdrawalConfirmOpen(false);
     await supabase.auth.signOut({ scope: "local" });
     await onLogout();

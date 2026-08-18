@@ -7,6 +7,7 @@ import MyPageModal from "./components/MyPageModal";
 import ManiaTest from "./components/ManiaTest";
 import SignupModal from "./components/SignupModal";
 import LoginModal from "./components/LoginModal";
+import MemberAccessModal from "./components/MemberAccessModal";
 import { StarIcon } from "./components/Icons";
 import { calculateStoreAwards } from "./lib/awards";
 import { calculateDistanceKm, formatDistance } from "./lib/location";
@@ -341,7 +342,7 @@ function YeopsulMap({
     return () => {
       isActive = false;
     };
-  }, [reviewRefreshKey]);
+  }, [reviewRefreshKey, user?.id]);
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -569,7 +570,7 @@ function YeopsulMap({
     }
 
     if (!user) {
-      setReviewMessage("리뷰 작성은 로그인이 필요합니다. 로그인 후 이용해주세요.");
+      onProfileClick();
       return;
     }
 
@@ -582,7 +583,6 @@ function YeopsulMap({
 
   function startFabReview() {
     if (!user) {
-      setReviewMessage("리뷰 작성은 로그인이 필요합니다. 로그인 후 이용해주세요.");
       onProfileClick();
       return;
     }
@@ -844,6 +844,22 @@ function YeopsulMap({
                     내 위치에서 {formatDistance(store.distanceKm)}
                   </span>
                 )}
+                {store.awards?.isEligible &&
+                  (store.awards.cheese ||
+                    store.awards.sauce ||
+                    store.awards.cooking) && (
+                    <div
+                      className="bottom-sheet-awards"
+                      aria-label="지점 수상 정보"
+                    >
+                      {store.awards.threeStar && (
+                        <span className="is-three-star">엽슐랭 3스타</span>
+                      )}
+                      {store.awards.cheese && <span>치즈상</span>}
+                      {store.awards.sauce && <span>소스상</span>}
+                      {store.awards.cooking && <span>익힘상</span>}
+                    </div>
+                  )}
               </button>
             ))}
           </div>
@@ -947,6 +963,7 @@ function YeopsulMap({
           onReviewsChanged={() =>
             setReviewRefreshKey((currentKey) => currentKey + 1)
           }
+          onMemberRequired={onProfileClick}
           user={user}
         />
       )}
@@ -1017,6 +1034,8 @@ function App() {
   const [showOnboarding, setShowOnboarding] = useState(true);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showMemberAccessModal, setShowMemberAccessModal] = useState(false);
+  const [onboardingInitialStage, setOnboardingInitialStage] = useState("start");
   const [maniaAnswers, setManiaAnswers] = useState(null);
 
   // 처음 접속했을 때 로그인 여부 확인
@@ -1131,7 +1150,9 @@ function App() {
     setMessage("");
     setShowLoginModal(false);
     setShowSignupModal(false);
+    setShowMemberAccessModal(false);
     setShowOnboarding(false);
+    setOnboardingInitialStage("start");
     setManiaAnswers(null);
   }
 
@@ -1149,14 +1170,16 @@ function App() {
     setMessage("");
     setShowLoginModal(false);
     setShowSignupModal(false);
+    setShowMemberAccessModal(false);
     setShowOnboarding(true);
+    setOnboardingInitialStage("start");
     setManiaAnswers(null);
     return true;
   }
 
   function handleProfileClick() {
     if (!user) {
-      openLogin();
+      setShowMemberAccessModal(true);
     }
   }
 
@@ -1165,6 +1188,7 @@ function App() {
     setPassword("");
     setShowOnboarding(false);
     setShowSignupModal(false);
+    setShowMemberAccessModal(false);
     setShowLoginModal(true);
     setMessage("");
   }
@@ -1175,6 +1199,7 @@ function App() {
     setShowOnboarding(false);
     setShowSignupModal(true);
     setShowLoginModal(false);
+    setShowMemberAccessModal(false);
   }
 
   function cancelSignup() {
@@ -1182,6 +1207,16 @@ function App() {
     setMessage("");
     setShowSignupModal(false);
     setShowLoginModal(false);
+    setShowOnboarding(true);
+    setOnboardingInitialStage("start");
+  }
+
+  function openSignupFlow() {
+    setMessage("");
+    setShowMemberAccessModal(false);
+    setShowLoginModal(false);
+    setShowSignupModal(false);
+    setOnboardingInitialStage("test");
     setShowOnboarding(true);
   }
 
@@ -1204,11 +1239,29 @@ function App() {
         onLogout={handleLogout}
       />
 
-      {!user && showOnboarding && !showSignupModal && !showLoginModal && (
+      {!user &&
+        showOnboarding &&
+        !showSignupModal &&
+        !showLoginModal &&
+        !showMemberAccessModal && (
         <div className="onboarding-overlay">
           <ManiaTest
+            initialStage={onboardingInitialStage}
             onStartSignup={startSignup}
-            onBrowse={() => setShowOnboarding(false)}
+            onBrowse={() => {
+              setShowOnboarding(false);
+              setOnboardingInitialStage("start");
+            }}
+            onLogin={openLogin}
+          />
+        </div>
+      )}
+
+      {!user && showMemberAccessModal && (
+        <div className="onboarding-overlay">
+          <MemberAccessModal
+            onClose={() => setShowMemberAccessModal(false)}
+            onSignup={openSignupFlow}
             onLogin={openLogin}
           />
         </div>
@@ -1246,6 +1299,7 @@ function App() {
             onCancel={() => {
               setMessage("");
               setShowLoginModal(false);
+              setOnboardingInitialStage("start");
               setShowOnboarding(true);
             }}
           />

@@ -17,8 +17,8 @@ function getImageUrl(fileName) {
   return matchingPath ? imageModules[matchingPath] : null;
 }
 
-function ManiaTest({ onStartSignup, onBrowse, onLogin }) {
-  const [stage, setStage] = useState("start");
+function ManiaTest({ onStartSignup, onBrowse, onLogin, initialStage = "start" }) {
+  const [stage, setStage] = useState(initialStage);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState(Array(MANIA_QUESTIONS.length).fill(null));
   const [score, setScore] = useState(null);

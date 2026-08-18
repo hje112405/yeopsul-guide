@@ -100,6 +100,7 @@ function StoreDetail({
   message,
   reviewRefreshKey,
   onReviewsChanged,
+  onMemberRequired,
   user,
 }) {
   const [isSaved, setIsSaved] = useState(false);
@@ -258,7 +259,7 @@ function StoreDetail({
 
   async function toggleSavedStore() {
     if (!user) {
-      setSaveMessage("지점 저장은 로그인이 필요한 회원 기능입니다.");
+      onMemberRequired?.();
       return;
     }
 
@@ -337,7 +338,7 @@ function StoreDetail({
 
   async function toggleReviewLike(review) {
     if (!user) {
-      setLikeMessage("리뷰 좋아요는 로그인이 필요한 회원 기능입니다.");
+      onMemberRequired?.();
       return;
     }
 
