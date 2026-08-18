@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { MANIA_QUESTIONS } from "../data/maniaQuestions";
+import { CloseIcon, VerificationIcon } from "./Icons";
 import "./ManiaTest.css";
 
 const imageModules = import.meta.glob(
@@ -23,6 +24,7 @@ function ManiaTest({ onStartSignup, onBrowse, onLogin }) {
   const [score, setScore] = useState(null);
   const [isChecking, setIsChecking] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const testRunIdRef = useRef(0);
 
   const question = MANIA_QUESTIONS[currentQuestionIndex];
   const selectedAnswer = answers[currentQuestionIndex];
@@ -37,6 +39,7 @@ function ManiaTest({ onStartSignup, onBrowse, onLogin }) {
   }
 
   function retryTest() {
+    testRunIdRef.current += 1;
     setAnswers(Array(MANIA_QUESTIONS.length).fill(null));
     setCurrentQuestionIndex(0);
     setScore(null);
@@ -44,15 +47,29 @@ function ManiaTest({ onStartSignup, onBrowse, onLogin }) {
     setStage("test");
   }
 
+  function exitTest() {
+    testRunIdRef.current += 1;
+    setAnswers(Array(MANIA_QUESTIONS.length).fill(null));
+    setCurrentQuestionIndex(0);
+    setScore(null);
+    setIsChecking(false);
+    setErrorMessage("");
+    setStage("start");
+  }
+
   async function submitAnswers() {
     if (answers.some((answer) => answer === null)) return;
 
+    const testRunId = testRunIdRef.current + 1;
+    testRunIdRef.current = testRunId;
     setIsChecking(true);
     setErrorMessage("");
 
     const { data, error } = await supabase.rpc("evaluate_mania_test", {
       answer_values: answers,
     });
+
+    if (testRunId !== testRunIdRef.current) return;
 
     setIsChecking(false);
 
@@ -69,57 +86,84 @@ function ManiaTest({ onStartSignup, onBrowse, onLogin }) {
 
   if (stage === "start") {
     return (
+      <div className="mania-modal-card mania-start-card">
+        <button
+          type="button"
+          className="mania-test-close"
+          onClick={onBrowse}
+          aria-label="시작 화면 닫고 비회원으로 둘러보기"
+          title="비회원으로 둘러보기"
+        >
+          <CloseIcon />
+        </button>
+        <h1 className="mania-start-title">엽슐랭가이드</h1>
+        <p className="mania-start-tagline">진짜들의 엽떡 리뷰 서비스</p>
+        <div className="mania-start-actions">
+          <button
+            type="button"
+            className="mania-secondary-button"
+            onClick={onLogin}
+          >
+            기존 회원 로그인
+          </button>
+          <button
+            type="button"
+            className="mania-primary-button"
+            onClick={() => setStage("test")}
+          >
+            회원가입
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (stage === "result") {
+    if (passed) {
+      return (
+        <div className="mania-modal-card mania-passed-card">
+          <VerificationIcon className="mania-verification-icon" />
+          <h2>엽떡 매니아 인증 완료</h2>
+          <p className="mania-passed-message">당신은 진짜 엽떡 매니아예요.</p>
+          <p className="mania-passed-score">
+            {MANIA_QUESTIONS.length}문항 중 {score}문항 정답
+          </p>
+          <button
+            type="button"
+            className="mania-primary-button"
+            onClick={() => onStartSignup(answers)}
+          >
+            회원가입 하기
+          </button>
+        </div>
+      );
+    }
+
+    return (
       <div className="mania-modal-card">
-        <p className="mania-eyebrow">엽슐랭가이드</p>
-        <h2>나는 엽떡 매니아일까?</h2>
-        <p className="mania-description">
-          5문항 중 3문항 이상 맞히면 회원가입을 진행할 수 있어요.
-        </p>
-        <button type="button" className="mania-primary-button" onClick={() => setStage("test")}>
-          매니아 테스트 시작
+        <p className="mania-progress">결과 {score} / 5</p>
+        <h2>아쉽게도 매니아 인증에 실패했어요.</h2>
+        <button type="button" className="mania-primary-button" onClick={retryTest}>
+          다시 도전하기
         </button>
-        <button type="button" className="mania-secondary-button" onClick={onLogin}>
-          기존 회원 로그인
-        </button>
-        <button type="button" className="mania-text-button" onClick={onBrowse}>
+        <button type="button" className="mania-secondary-button" onClick={onBrowse}>
           비회원으로 둘러보기
         </button>
       </div>
     );
   }
 
-  if (stage === "result") {
-    return (
-      <div className="mania-modal-card">
-        <p className="mania-progress">결과 {score} / 5</p>
-        <h2>{passed ? "매니아 테스트 통과!" : "아쉽게도 매니아 인증에 실패했어요."}</h2>
-        {passed ? (
-          <>
-            <p className="mania-description">회원가입을 진행해주세요.</p>
-            <button
-              type="button"
-              className="mania-primary-button"
-              onClick={() => onStartSignup(answers)}
-            >
-              회원가입 하기
-            </button>
-          </>
-        ) : (
-          <>
-            <button type="button" className="mania-primary-button" onClick={onBrowse}>
-              비회원으로 둘러보기
-            </button>
-            <button type="button" className="mania-secondary-button" onClick={retryTest}>
-              다시 도전하기
-            </button>
-          </>
-        )}
-      </div>
-    );
-  }
-
   return (
     <div className="mania-modal-card mania-question-card">
+      <button
+        type="button"
+        className="mania-test-close"
+        onClick={exitTest}
+        aria-label="매니아 테스트 종료"
+        title="매니아 테스트 종료"
+      >
+        <CloseIcon />
+      </button>
       <p className="mania-progress">
         {currentQuestionIndex + 1} / {MANIA_QUESTIONS.length}
       </p>

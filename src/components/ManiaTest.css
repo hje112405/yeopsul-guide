@@ -11,6 +11,7 @@
 }
 
 .mania-modal-card {
+  position: relative;
   width: min(560px, 100%);
   padding: 30px;
   box-sizing: border-box;
@@ -19,6 +20,93 @@
   background: #fff;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
   text-align: left;
+}
+
+.mania-test-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  color: #6b7280;
+  background: transparent;
+  cursor: pointer;
+}
+
+.mania-test-close svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 1.8;
+}
+
+.mania-start-card {
+  padding-top: 54px;
+}
+
+.mania-start-title {
+  margin: 0;
+  color: #111827;
+  font-size: clamp(30px, 6vw, 42px);
+  font-weight: 900;
+  letter-spacing: -1.3px;
+  line-height: 1.15;
+}
+
+.mania-start-tagline {
+  margin-top: 10px;
+  color: #6b7280;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.mania-start-actions {
+  display: grid;
+  gap: 2px;
+  margin-top: 30px;
+}
+
+.mania-passed-card {
+  padding-top: 38px;
+  text-align: center;
+}
+
+.mania-verification-icon {
+  display: block;
+  width: 46px;
+  height: 46px;
+  margin: 0 auto 18px;
+  color: var(--service-red);
+}
+
+.mania-modal-card.mania-passed-card h2 {
+  margin: 0;
+  font-size: clamp(24px, 5vw, 30px);
+  letter-spacing: -0.6px;
+}
+
+.mania-passed-message {
+  margin-top: 10px;
+  color: #4b5563;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.mania-passed-score {
+  margin-top: 22px;
+  color: #9ca3af;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.mania-passed-card .mania-primary-button {
+  margin-top: 26px;
 }
 
 .mania-modal-card h2 {

@@ -459,7 +459,7 @@ function ReviewForm({
             >
               사진 선택
             </button>
-            <p>선택사항 · JPG/PNG/WebP · 최대 3장 · 장당 5MB 이하</p>
+            <p>이미지를 등록해주세요</p>
           </section>
 
           {errorMessage && <p className="review-form-error">{errorMessage}</p>}

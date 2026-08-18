@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { deleteOwnReview } from "../lib/reviews";
 import { calculateStoreAwards } from "../lib/awards";
-import { BookmarkIcon, HeartIcon } from "./Icons";
+import { BookmarkIcon, HeartIcon, StarIcon } from "./Icons";
 import "./StoreDetail.css";
 
 function formatAverage(average) {
@@ -30,9 +30,15 @@ function ReviewCard({
   onDelete,
 }) {
   const ratings = [
-    review.cheese_rating !== null ? `치즈 ${review.cheese_rating}` : null,
-    review.sauce_rating !== null ? `소스 ${review.sauce_rating}` : null,
-    review.cooking_rating !== null ? `익힘 ${review.cooking_rating}` : null,
+    review.cheese_rating !== null
+      ? { label: "치즈", value: review.cheese_rating }
+      : null,
+    review.sauce_rating !== null
+      ? { label: "소스", value: review.sauce_rating }
+      : null,
+    review.cooking_rating !== null
+      ? { label: "익힘", value: review.cooking_rating }
+      : null,
   ].filter(Boolean);
 
   return (
@@ -52,7 +58,17 @@ function ReviewCard({
         </div>
       </div>
       <p className="review-menu">{review.menu}</p>
-      {ratings.length > 0 && <p className="review-ratings-text">{ratings.join(" · ")}</p>}
+      {ratings.length > 0 && (
+        <div className="review-ratings-list" aria-label="리뷰 평가">
+          {ratings.map((rating) => (
+            <span key={rating.label}>
+              <StarIcon filled />
+              <strong>{Number(rating.value).toFixed(1)}</strong>
+              {rating.label}
+            </span>
+          ))}
+        </div>
+      )}
       {review.content && <p className="review-content">{review.content}</p>}
       {review.review_images?.length > 0 && (
         <div className={`review-card-images count-${review.review_images.length}`}>
