@@ -1,0 +1,137 @@
+.mypage-backdrop {
+  position: fixed;
+  z-index: 110;
+  inset: 0;
+  display: grid;
+  padding: 20px;
+  place-items: center;
+  background: rgba(17, 24, 39, 0.5);
+}
+
+.mypage-modal {
+  position: relative;
+  width: min(100%, 560px);
+  max-height: min(92vh, 820px);
+  overflow-y: auto;
+  padding: 30px;
+  box-sizing: border-box;
+  border-radius: 18px;
+  color: #1f2937;
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(17, 24, 39, 0.3);
+  text-align: left;
+}
+
+.mypage-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: #4b5563;
+  background: #f3f4f6;
+  cursor: pointer;
+  font-size: 25px;
+}
+
+.mypage-title {
+  margin: 0 48px 24px 0;
+  color: #111827;
+  font-size: 25px;
+}
+
+.mypage-summary {
+  padding: 22px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #f9fafb;
+}
+
+.mypage-summary > p {
+  margin: 0 0 20px;
+  color: #374151;
+  font-size: 19px;
+}
+
+.mypage-summary > p strong { color: #b91c1c; }
+.mypage-summary > div { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.mypage-summary > div button { padding: 13px 10px; border: 1px solid transparent; border-radius: 10px; color: #6b7280; background: #fff; cursor: pointer; text-align: center; font-size: 13px; }
+.mypage-summary > div button:hover { border-color: #fecaca; }
+.mypage-summary > div button strong { display: block; margin-top: 4px; color: #111827; font-size: 20px; }
+
+.mypage-back {
+  margin: 0 48px 20px 0;
+  padding: 7px 2px;
+  border: 0;
+  color: #111827;
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.mypage-list-view { margin-top: 8px; }
+.mypage-card-list { display: grid; gap: 11px; }
+.mypage-empty { padding: 30px 18px; border-radius: 11px; color: #6b7280; background: #f9fafb; text-align: center; font-size: 14px; }
+.mypage-review-card, .mypage-saved-card { padding: 15px; border: 1px solid #e5e7eb; border-radius: 11px; background: #fff; }
+.mypage-review-body { display: block; width: 100%; padding: 0; border: 0; color: inherit; background: transparent; cursor: pointer; text-align: left; }
+.mypage-list-card-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.mypage-list-card-heading strong { color: #111827; font-size: 14px; }
+.mypage-list-card-heading time { color: #9ca3af; font-size: 12px; }
+.mypage-review-menu { margin-top: 8px; color: #374151; font-size: 14px; font-weight: 700; }
+.mypage-review-ratings { margin-top: 5px; color: #dc2626; font-size: 13px; font-weight: 700; }
+.mypage-review-content { margin-top: 11px; color: #4b5563; font-size: 14px; line-height: 1.55; white-space: pre-wrap; }
+.mypage-review-actions { display: flex; justify-content: flex-end; gap: 4px; margin-top: 10px; }
+.mypage-review-actions button { padding: 4px 6px; border: 0; color: #6b7280; background: transparent; cursor: pointer; font-size: 12px; }
+.mypage-review-actions button:last-child { color: #dc2626; }
+.mypage-saved-card { display: flex; align-items: center; gap: 10px; }
+.mypage-saved-body { display: grid; flex: 1; gap: 5px; padding: 0; border: 0; color: #111827; background: transparent; cursor: pointer; text-align: left; }
+.mypage-saved-body span { color: #6b7280; font-size: 13px; line-height: 1.45; }
+.mypage-unsave { display: grid; width: 38px; height: 38px; flex: 0 0 auto; padding: 0; place-items: center; border: 1px solid #fecaca; border-radius: 10px; color: #dc2626; background: #fef2f2; cursor: pointer; }
+.mypage-unsave svg { width: 20px; fill: currentColor; stroke: currentColor; }
+.mypage-inline-confirm { margin-top: 14px; padding: 18px; border-radius: 11px; background: #f9fafb; text-align: center; }
+.mypage-inline-confirm > div { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+.mypage-inline-confirm button { padding: 10px; border: 1px solid #d1d5db; border-radius: 9px; color: #374151; background: #fff; cursor: pointer; font-weight: 700; }
+.mypage-inline-confirm button.is-danger { border-color: #dc2626; color: #fff; background: #dc2626; }
+.mypage-inline-confirm button:disabled { cursor: wait; opacity: 0.6; }
+
+.mypage-profile-section {
+  margin-top: 26px;
+  padding-top: 25px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.mypage-profile-section h2 { margin: 0 0 18px; color: #111827; font-size: 18px; }
+.mypage-profile-form { display: grid; gap: 18px; }
+.mypage-profile-field { display: grid; gap: 7px; color: #374151; font-size: 14px; font-weight: 700; }
+.mypage-profile-field > div { position: relative; }
+.mypage-profile-field input { width: 100%; padding: 12px 42px 12px 13px; box-sizing: border-box; border: 1px solid #d1d5db; border-radius: 10px; color: #111827; background: #fff; font: inherit; font-weight: 500; }
+.mypage-profile-field input[type="password"] { padding-right: 13px; }
+.mypage-profile-field button { position: absolute; top: 50%; right: 7px; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 50%; color: #6b7280; background: #f3f4f6; cursor: pointer; transform: translateY(-50%); font-size: 19px; }
+.mypage-field-help { margin: 6px 0 0; color: #9ca3af; font-size: 12px; }
+.mypage-profile-form > button { padding: 14px; border: 0; border-radius: 11px; color: #fff; background: #dc2626; cursor: pointer; font-weight: 800; }
+.mypage-profile-form > button:disabled { background: #d1d5db; cursor: wait; }
+.mypage-loading { margin-top: 14px; padding: 12px; border-radius: 9px; color: #4b5563; background: #f9fafb; font-size: 13px; line-height: 1.5; text-align: center; }
+.mypage-logout { width: 100%; margin-top: 28px; padding: 14px; border: 1px solid #d1d5db; border-radius: 11px; color: #374151; background: #fff; cursor: pointer; font-weight: 800; }
+.mypage-withdrawal { display: block; margin: 18px auto 0; padding: 3px; border: 0; color: #9ca3af; background: transparent; cursor: pointer; font-size: 12px; text-decoration: underline; }
+.mypage-withdrawal-confirm { margin-top: 14px; padding: 18px; border: 1px solid #fecaca; border-radius: 11px; background: #fff7f7; text-align: center; }
+.mypage-withdrawal-confirm strong { color: #991b1b; }
+.mypage-withdrawal-confirm p { margin: 8px 0 0; color: #6b7280; font-size: 13px; }
+.mypage-withdrawal-confirm > div { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
+.mypage-withdrawal-confirm button { padding: 10px; border: 1px solid #d1d5db; border-radius: 9px; color: #374151; background: #fff; cursor: pointer; font-weight: 700; }
+.mypage-withdrawal-confirm button.is-danger { border-color: #dc2626; color: #fff; background: #dc2626; }
+.mypage-withdrawal-confirm button:disabled { cursor: wait; opacity: 0.6; }
+.mypage-feedback-backdrop { position: fixed; z-index: 10; inset: 0; display: grid; padding: 20px; place-items: center; background: rgba(17, 24, 39, 0.56); }
+.mypage-feedback-modal { width: min(100%, 390px); padding: 26px; box-sizing: border-box; border-radius: 16px; background: #fff; box-shadow: 0 24px 70px rgba(17, 24, 39, 0.32); text-align: center; }
+.mypage-feedback-modal h2 { margin: 0; color: #111827; font-size: 20px; }
+.mypage-feedback-modal > div { margin-top: 13px; }
+.mypage-feedback-modal p { margin: 7px 0 0; color: #4b5563; font-size: 14px; line-height: 1.55; }
+.mypage-feedback-modal button { width: 100%; margin-top: 22px; padding: 12px; border: 0; border-radius: 10px; color: #fff; background: #dc2626; cursor: pointer; font-weight: 800; }
+
+@media (max-width: 640px) {
+  .mypage-backdrop { padding: 10px; }
+  .mypage-modal { max-height: 95vh; padding: 24px 18px; border-radius: 15px; }
+}

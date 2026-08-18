@@ -1,0 +1,214 @@
+.onboarding-overlay {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  padding: 20px;
+  place-items: center;
+  overflow-y: auto;
+  background: rgba(17, 24, 39, 0.62);
+  backdrop-filter: blur(3px);
+}
+
+.mania-modal-card {
+  width: min(560px, 100%);
+  padding: 30px;
+  box-sizing: border-box;
+  border-radius: 20px;
+  color: #1f2937;
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+  text-align: left;
+}
+
+.mania-modal-card h2 {
+  margin: 8px 0 12px;
+  color: #111827;
+  font-size: 25px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.mania-eyebrow,
+.mania-progress {
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.mania-description {
+  margin-bottom: 24px;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.mania-primary-button,
+.mania-secondary-button,
+.mania-text-button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 13px 16px;
+  border-radius: 11px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.mania-primary-button {
+  border: 0;
+  color: #fff;
+  background: #dc2626;
+}
+
+.mania-secondary-button {
+  border: 1px solid #d1d5db;
+  color: #374151;
+  background: #fff;
+}
+
+.mania-text-button {
+  border: 0;
+  color: #6b7280;
+  background: transparent;
+}
+
+.mania-primary-button:disabled,
+.mania-secondary-button:disabled {
+  color: #9ca3af;
+  background: #e5e7eb;
+  cursor: not-allowed;
+}
+
+.mania-options {
+  display: grid;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.mania-options.image-options {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.mania-options button {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  color: #374151;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+}
+
+.mania-options button.is-selected {
+  border-color: #dc2626;
+  background: #fef2f2;
+}
+
+.mania-options img,
+.mania-image-placeholder {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 9px;
+  object-fit: contain;
+  background: #f9fafb;
+}
+
+.mania-image-placeholder {
+  display: grid;
+  place-items: center;
+  color: #9ca3af;
+  background: #f3f4f6;
+  font-size: 12px;
+  text-align: center;
+}
+
+.mania-options.text-options button {
+  display: flex;
+  align-items: flex-start;
+  line-height: 1.55;
+}
+
+.mania-navigation {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.mania-error {
+  margin-top: 16px;
+  padding: 11px 13px;
+  border-radius: 9px;
+  color: #991b1b;
+  background: #fef2f2;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.mania-signup-form {
+  display: grid;
+  gap: 15px;
+  margin-top: 22px;
+}
+
+.mania-signup-form label {
+  display: grid;
+  gap: 7px;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.mania-signup-form input {
+  width: 100%;
+  padding: 12px 13px;
+  box-sizing: border-box;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  outline: none;
+  color: #111827;
+  background: #fff;
+  font: inherit;
+  font-weight: 400;
+}
+
+.mania-clearable-field {
+  position: relative;
+}
+
+.mania-signup-form .mania-clearable-field input {
+  padding-right: 42px;
+}
+
+.mania-clearable-field button {
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: #6b7280;
+  background: #f3f4f6;
+  cursor: pointer;
+  font-size: 19px;
+  transform: translateY(-50%);
+}
+
+@media (max-width: 560px) {
+  .mania-modal-card {
+    padding: 22px 18px;
+  }
+
+  .mania-modal-card h2 {
+    font-size: 21px;
+  }
+
+  .mania-options.image-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
